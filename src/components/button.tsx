@@ -11,6 +11,8 @@ export type ButtonProps = {
   size: Size
   view: View
   color: Color
+  mt?: string
+  mb?: string
 } & ButtonHTMLAttributes<HTMLButtonElement>
 
 const BUTTON_SIZES = {
@@ -46,24 +48,26 @@ const BUTTON_COLORS = {
 }
 
 const ColoredButton = styled.button<ButtonProps>`
+  margin-top: ${({ mt }) => mt};
+  margin-bottom: ${({ mb }) => mb};
   text-transform: none;
   letter-spacing: normal;
-  color: ${(props) => (props.view === 'semi' ? BUTTON_COLORS[props.color] : 'white')};
-  font-size: ${(props) => BUTTON_SIZES[props.size].fontSize};
+  color: ${props => (props.view === 'semi' ? BUTTON_COLORS[props.color] : 'white')};
+  font-size: ${props => BUTTON_SIZES[props.size].fontSize};
   font-weight: 500;
-  line-height: ${(props) => BUTTON_SIZES[props.size].lineHeight};
-  height: ${(props) => BUTTON_SIZES[props.size].height};
-  min-width: ${(props) => BUTTON_SIZES[props.size].width};
-  background-color: ${(props) => (props.view === 'filled' ? BUTTON_COLORS[props.color] : 'transparent')};
-  border-color: ${(props) => BUTTON_COLORS[props.color]};
+  line-height: ${props => BUTTON_SIZES[props.size].lineHeight};
+  height: ${props => BUTTON_SIZES[props.size].height};
+  min-width: ${props => BUTTON_SIZES[props.size].width};
+  background-color: ${props => (props.view === 'filled' ? BUTTON_COLORS[props.color] : 'transparent')};
+  border-color: ${props => BUTTON_COLORS[props.color]};
   padding: 0 1rem;
   border-radius: 4px;
   border-style: solid;
-  cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
-  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+  cursor: ${props => (props.disabled ? 'default' : 'pointer')};
+  opacity: ${props => (props.disabled ? 0.5 : 1)};
 
   &:hover {
-    opacity: ${(props) => (props.disabled ? 0.5 : 0.85)};
+    opacity: ${props => (props.disabled ? 0.5 : 0.85)};
   }
 
   &:focus {
@@ -72,35 +76,6 @@ const ColoredButton = styled.button<ButtonProps>`
   }
 `
 
-const TransparentButton = styled.button<ButtonProps>`
-  text-transform: none;
-  letter-spacing: normal;
-  color: ${(props) => BUTTON_COLORS[props.color]};
-  font-size: ${(props) => BUTTON_SIZES[props.size].fontSize};
-  line-height: ${(props) => BUTTON_SIZES[props.size].lineHeight};
-  font-weight: 300;
-  height: ${(props) => BUTTON_SIZES[props.size].height};
-  background-color: transparent;
-  border-color: transparent;
-  padding: 0;
-  border-radius: 4px;
-  border-style: solid;
-  cursor: pointer;
-  text-decoration: underline;
-
-  &:hover {
-    opacity: 0.85;
-  }
-
-  &:focus {
-    background-color: ${COLORS.BACKGROUND_ONE};
-    outline: none;
-    opacity: 1;
-  }
-`
-
 export const Button = (props: ButtonProps) => {
-  const ButtonView = props.view === 'transparent' ? TransparentButton : ColoredButton
-
-  return <ButtonView {...props} />
+  return <ColoredButton {...props} />
 }

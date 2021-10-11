@@ -1,12 +1,18 @@
-import React from 'react';
-import './App.css';
+import React from 'react'
+import './App.css'
 
-import {DepositWidget} from "./form";
+import { Deposit } from './form'
+import styled from 'styled-components'
 
-function App() {
+const Wrapper = styled.div`
+  width: 100vw;
+  height: 100vh;
+`
+
+export const App = () => {
   return (
-    <DepositWidget />
-  );
+    <Wrapper>
+      <Deposit />
+    </Wrapper>
+  )
 }
-
-export default App;

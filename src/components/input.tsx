@@ -4,59 +4,29 @@ import styled from 'styled-components'
 import { COLORS } from '../constants'
 
 const INPUT_PADDING_X = '1rem'
-const INPUT_PADDING_Y = 'calc(1rem - 1px)'
+const INPUT_PADDING_Y = 'calc(1rem)'
 
-const StyledInputWrapper = styled.div`
+const StyledWrapper = styled.div<{ mb?: string; mt?: string }>`
   position: relative;
   font-size: 1rem;
-  margin-bottom: 16px;
-
-  & input:not(:placeholder-shown) {
-    padding-top: calc(${INPUT_PADDING_Y} + ${INPUT_PADDING_X} * (2 / 3));
-    padding-bottom: calc(${INPUT_PADDING_Y} / 3);
-  }
-
-  & input:not(:placeholder-shown) ~ label {
-    padding-top: calc(1rem / 3);
-    padding-bottom: calc(1rem / 3);
-    font-size: 0.75rem;
-    pointer-events: none;
-  }
-
-  & input::-webkit-input-placeholder {
-    color: transparent;
-  }
-
-  & input:-ms-input-placeholder {
-    color: transparent;
-  }
-
-  & input::-ms-input-placeholder {
-    color: transparent;
-  }
-
-  & input::-moz-placeholder {
-    color: transparent;
-  }
-
-  & input::placeholder {
-    color: transparent;
-  }
+  margin-top: ${({ mt }) => mt};
+  margin-bottom: ${({ mb }) => mb};
 `
 
-const StyledInput = styled.input`
-  display: block;
-  width: 100%;
-  height: 56px;
+const StyledInputWrapper = styled.div<{ error: boolean }>`
+  display: flex;
+  align-items: center;
   padding: ${INPUT_PADDING_Y} ${INPUT_PADDING_X};
-  font-weight: 300;
-  color: white;
   background-color: ${COLORS.BACKGROUND_ONE};
   border: ${(props: { error: boolean }) => `1px solid ${props.error ? COLORS.PALETTE_ERROR : COLORS.BACKGROUND_THREE}`};
+
+  border-bottom: 1px solid ${(props: { error: boolean }) => (props.error ? COLORS.PALETTE_ERROR : COLORS.TEXT_THREE)};
+
   border-radius: 4px;
 
   &:hover {
     background-color: ${COLORS.TEXT_THREE};
+    cursor: text;
   }
 
   &:active {
@@ -66,6 +36,27 @@ const StyledInput = styled.input`
   &:focus {
     background-color: ${COLORS.TEXT_THREE};
   }
+`
+
+const StyledInput = styled.input<{ startAdornment: boolean }>`
+  font-weight: 300;
+  color: white;
+  width: ${props => (props.startAdornment ? '80%' : '100%')};
+  background-color: transparent;
+  border: none;
+  padding: 0;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+`
+
+const StartAdornmentWrapper = styled.span`
+  color: ${COLORS.TEXT_ONE};
+  margin-right: 4px;
+  max-width: 15%;
+  overflow: hidden;
 `
 
 const StyledLabel = styled.label`
@@ -78,12 +69,13 @@ const StyledLabel = styled.label`
   padding: ${INPUT_PADDING_Y} ${INPUT_PADDING_X};
   margin-bottom: 0;
   line-height: 1.5;
+  border: 1px solid transparent;
   border-radius: 0.25rem;
   transition: all 0.1s ease-in-out;
 
-  &:hover {
-    cursor: text;
-  }
+  //&:hover {
+  //  cursor: text;
+  //}
 `
 
 const StyledError = styled.div`
@@ -103,54 +95,59 @@ export type InputProps = {
   type?: string
   id?: string
   name?: string
-  label?: string
+  formName?: string
   error?: string | null
   value?: string | number
   defaultValue?: string | number
+  startAdornment?: string
   text?: string
   required?: boolean
   autoFocus?: boolean
   autoComplete?: string
-  transparent?: boolean
-  shouldShowError?: boolean
+  mb?: string
+  mt?: string
   onChange?: (e: any) => void
 }
 
 export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
   const {
-    id,
+    type,
     name,
-    label,
+    formName,
     value,
     defaultValue,
+    startAdornment,
     error,
     text,
     required,
     autoFocus,
-    autoComplete,
+    autoComplete = 'off',
     onChange,
-    shouldShowError,
+    mb,
+    mt,
   } = props
-
   return (
-    <StyledInputWrapper>
-      <StyledInput
-        type="text"
-        id={id}
-        placeholder={label}
-        name={name}
-        ref={ref}
-        error={Boolean(error) && Boolean(shouldShowError)}
-        required={required}
-        autoFocus={autoFocus}
-        autoComplete={autoComplete}
-        onChange={onChange}
-        value={value}
-        defaultValue={defaultValue}
-      />
-      {id && label && <StyledLabel htmlFor={id}>{label}</StyledLabel>}
+    <StyledWrapper mb={mb} mt={mt}>
+      <StyledInputWrapper error={Boolean(error)}>
+        {startAdornment && <StartAdornmentWrapper>{startAdornment}</StartAdornmentWrapper>}
+        <StyledInput
+          type={type}
+          id={name}
+          placeholder={startAdornment ? '' : name}
+          startAdornment={Boolean(startAdornment)}
+          name={formName}
+          ref={ref}
+          required={required}
+          autoFocus={autoFocus}
+          autoComplete={autoComplete}
+          onChange={onChange}
+          value={value}
+          defaultValue={defaultValue}
+        />
+        {name && <StyledLabel htmlFor={name}>{name}</StyledLabel>}
+      </StyledInputWrapper>
       {text && <StyledText>{text}</StyledText>}
-      {shouldShowError && error && <StyledError>{error}</StyledError>}
-    </StyledInputWrapper>
+      {error && <StyledError>{error}</StyledError>}
+    </StyledWrapper>
   )
 })

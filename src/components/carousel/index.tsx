@@ -6,6 +6,8 @@ import { useDeviceType, RESPONSIVE } from './useDeviceType'
 
 import { COLORS } from '../../constants'
 
+import { Bitcoin } from './Bitcoin'
+
 import 'react-multi-carousel/lib/styles.css'
 
 const StyledAccentedText = styled.span`
@@ -22,10 +24,6 @@ const StyledText = styled.div`
 
 const FeeRow = styled.div`
   display: flex;
-`
-
-const StyledInfo = styled.div`
-  margin-left: 8px;
 `
 
 const StyledBlock = styled.div`
@@ -65,87 +63,20 @@ type CarouselProps = {
   select: (id: string) => void
 }
 
-const IconWrapper = styled.div`
-  margin-left: 5px;
-  margin-bottom: 3px;
-`
-
-const RightIcon = () => (
-  <IconWrapper>
-    <svg width="10" height="14" viewBox="0 0 10 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M1.5 13L7.5 7L1.5 0.999999" stroke="#A8AEBD" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  </IconWrapper>
-)
-
-const Arrow = styled.button<{ left: boolean }>`
-  position: absolute;
-  top: calc(50% - 20px);
-  ${(props) => (props.left ? 'left: -20px' : 'right: -20px')};
-  ${(props) => (props.left ? 'transform: rotate(180deg);' : '')};
-  outline: 0;
-  transition: all 0.5s;
-  border-radius: 35px;
-  z-index: 1000;
-  background-color: ${COLORS.TEXT_THREE};
-  border: none;
-  outline: none;
-  min-width: 40px;
-  min-height: 40px;
-  box-shadow: 0 ${(props) => (props.left ? '-12px' : '12px')} 24px rgba(18, 27, 38, 0.5);
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${COLORS.BACKGROUND_ONE};
-  }
-
-  &:active,
-  &:focus {
-    border: none;
-    outline: none;
-  }
-`
-
-const CustomRightArrow = ({ onClick }: any) => (
-  <Arrow onClick={onClick} left={false}>
-    <RightIcon />
-  </Arrow>
-)
-
-const CustomLeftArrow = ({ onClick }: any) => (
-  <Arrow onClick={onClick} left={true}>
-    <RightIcon />
-  </Arrow>
-)
-
-const ButtonGroup = ({ next, previous }: any) => (
-  <div className="carousel-button-group">
-    <CustomLeftArrow onClick={() => previous()} />
-    <CustomRightArrow onClick={() => next()} />
-  </div>
-)
-
 export const Carousel = ({ paymentSystems, currency, select, selectedId }: CarouselProps) => {
   const deviceType = useDeviceType()
 
   return (
     <StyledParent>
-      <ReactCarousel
-        deviceType={deviceType}
-        responsive={RESPONSIVE}
-        arrows={false}
-        renderButtonGroupOutside
-        customLeftArrow={<CustomLeftArrow />}
-        customRightArrow={<CustomRightArrow />}
-        customButtonGroup={<ButtonGroup />}
-      >
-        {paymentSystems.map((ps: any) => { // TODO: !!!
+      <ReactCarousel deviceType={deviceType} responsive={RESPONSIVE}>
+        {paymentSystems.map((ps: any) => {
+          // TODO: !!!
           const truncatedMin = ps.min.split('.')[0]
           const truncatedMax = ps.max.split('.')[0]
 
           return (
             <ItemWrapper key={ps.id} active={ps.id === selectedId} onClick={() => select(ps.id)}>
-              {/*{getPsIcon(ps.id)}*/}
+              <Bitcoin />
               <ContentWrapper>
                 <StyledBlock>
                   <StyledText>Usage fee</StyledText>
