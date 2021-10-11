@@ -5,7 +5,7 @@ import { startProcessing } from '../processing'
 import { sendApplicationErrorFx } from '../app'
 
 forward({
-  from: depositFx.doneData,
+  from: depositFx.doneData.map(({ redirect: { url } }) => url),
   to: startProcessing,
 })
 

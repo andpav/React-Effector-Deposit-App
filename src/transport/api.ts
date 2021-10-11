@@ -13,7 +13,7 @@ export type Headers = Record<string, string> | null
 
 type RequestParams = { endpoint: string; headers: Headers }
 
-export type PostFormData = Record<string, string | undefined>
+export type PostFormData = Processing
 export type FetchFeeData = { amount: string; id: string }
 
 export type GetPsList = { data: { data: any } } // TODO: !!!
@@ -21,10 +21,9 @@ export type PostForm = { data: { data: Processing } }
 export type FetchFee = { data: { data: Fee } }
 
 export const api = {
-  getPsList: ({ endpoint, headers }: RequestParams) =>
-    get<GetPsList>(endpoint, { headers }).then(({ data: { data } }) => data),
-  postForm: ({ endpoint, headers, data }: RequestParams & { data: PostFormData }) =>
-    post<PostForm>(endpoint, { headers }, data).then(({ data: { data } }) => data),
-  fetchFee: ({ endpoint, headers, data }: RequestParams & { data: FetchFeeData }) =>
-    post<FetchFee>(endpoint, { headers }, data).then(({ data: { data } }) => data),
+  getPsList: () => get<GetPsList>('/api/payment-systems', {}).then(({ data: { data } }) => data),
+  postForm: ({ data }: RequestParams & { data: PostFormData }) =>
+    post<PostForm>('/api/create-payment', {}, data).then(({ data: { data } }) => data),
+  fetchFee: ({ data }: RequestParams & { data: FetchFeeData }) =>
+    post<FetchFee>('/api/fee', {}, data).then(({ data: { data } }) => data),
 }

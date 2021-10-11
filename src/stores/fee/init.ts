@@ -6,15 +6,15 @@ import { sendApplicationErrorFx } from '../app'
 import { $shouldShowFee, getFee, getFeeFx, debouncedGetFee, resetFee } from './index'
 
 guard({
-  source: setAmount.map((amount) => ({ amount })),
+  source: setAmount.map(amount => ({ amount })),
   filter: $shouldShowFee,
   target: getFee,
 })
 
-forward({
-  from: debouncedGetFee,
-  to: getFeeFx,
-})
+// forward({
+//   from: debouncedGetFee,
+//   to: getFeeFx,
+// })
 
 forward({
   from: setSelectedId,

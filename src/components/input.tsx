@@ -107,6 +107,7 @@ export type InputProps = {
   mb?: string
   mt?: string
   onChange?: (e: any) => void
+  register: any // TODO: !!!
 }
 
 export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
@@ -125,6 +126,7 @@ export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
     onChange,
     mb,
     mt,
+    register,
   } = props
   return (
     <StyledWrapper mb={mb} mt={mt}>
@@ -143,6 +145,7 @@ export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
           onChange={onChange}
           value={value}
           defaultValue={defaultValue}
+          {...register(formName)}
         />
         {name && <StyledLabel htmlFor={name}>{name}</StyledLabel>}
       </StyledInputWrapper>

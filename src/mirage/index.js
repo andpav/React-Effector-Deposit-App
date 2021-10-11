@@ -1,5 +1,5 @@
-import { createServer, Model } from 'miragejs';
-import { ps } from './stubs';
+import { createServer, Model } from 'miragejs'
+import { ps } from './stubs'
 
 export const configureMirage = () =>
   createServer({
@@ -8,10 +8,10 @@ export const configureMirage = () =>
       transaction: Model,
     },
     routes() {
-      this.get('/service/billing/payment-methods/:id', () => ({ data: ps }));
+      this.get('/api/payment-systems', () => ({ data: ps }))
 
       this.post(
-        '/service/billing/payment/:id',
+        '/api/create-payment',
         () => {
           // const payload = JSON.parse(requestBody);
 
@@ -23,21 +23,19 @@ export const configureMirage = () =>
                 params: [],
               },
             },
-          };
+          }
         },
         { timing: 1000 },
-      );
+      )
 
       this.post('/send/message', () => ({
         errors: false,
-      }));
+      }))
 
-      this.post(
-        '/service/billing/fee/:id',
-        () => ({ data: { fee: { approximateAmount: '5.79', approximatePercent: 4.9 } } }),
-        { timing: 200 },
-      );
+      this.post('/api/fee', () => ({ data: { fee: { approximateAmount: '5.79', approximatePercent: 4.9 } } }), {
+        timing: 200,
+      })
 
-      this.passthrough();
+      this.passthrough()
     },
-  });
+  })

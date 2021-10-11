@@ -1,5 +1,5 @@
 {
-  "name": "deposit-widget",
+  "name": "deposit-app",
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
@@ -11,7 +11,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/styled-components": "^5.1.15",
-    "miragejs": "^0.1.39",
+    "miragejs": "^0.1.42",
     "typescript": "^4.1.2"
   },
   "dependencies": {
@@ -22,6 +22,7 @@
     "prettier": "^2.0.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-hook-form": "^7.17.2",
     "react-multi-carousel": "^2.6.5",
     "react-scripts": "4.0.3",
     "styled-components": "^5.3.1"

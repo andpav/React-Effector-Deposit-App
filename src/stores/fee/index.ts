@@ -1,9 +1,8 @@
 import { debounce } from 'patronum/debounce'
 import { createEffect, attach, createEvent, restore, combine } from '../../lib/effector'
 
-import { $commonApiData } from '../endpoints'
 import { $amount } from '../deposit'
-import { $paymentSystemsSelectedId, $paymentSystemSelected } from '../paymentSystems'
+import { $paymentSystemSelected } from '../paymentSystems'
 
 import { api } from '../../transport/api'
 
@@ -15,19 +14,8 @@ export const debouncedGetFee = debounce({ source: getFee, timeout: 500 })
 
 const fetchFeeFx = createEffect(api.fetchFee)
 
-const $getFeeParams = combine(
-  $commonApiData.map(({ fetchFeeUrl, headers }) => ({ endpoint: fetchFeeUrl, headers })),
-  $paymentSystemsSelectedId,
-)
-
 export const getFeeFx = attach({
   effect: fetchFeeFx,
-  source: $getFeeParams,
-  mapParams: ({ amount }: { amount: string }, [{ endpoint, headers }, selectedId]) => ({
-    data: { amount, id: selectedId },
-    endpoint,
-    headers,
-  }),
 })
 
 export const $feePending = getFeeFx.pending
@@ -49,7 +37,8 @@ export const $result = combine($amount, $fee, (amount, { approximateAmount, feeS
   return String(difference)
 })
 
-const checkIsAmountCorrect = ({ ps, amount }: { ps?: any; amount: string }) => { // TODO: !!!
+const checkIsAmountCorrect = ({ ps, amount }: { ps?: any; amount: string }) => {
+  // TODO: !!!
   if (!ps) return false
 
   const { min, max } = ps
