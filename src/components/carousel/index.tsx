@@ -5,12 +5,13 @@ import styled from 'styled-components'
 import { useDeviceType, RESPONSIVE } from './useDeviceType'
 
 import { COLORS } from '../../constants'
+import { PaymentSystem, PaymentSystems } from '../../stores/paymentSystems'
 
 import { Bitcoin } from './Bitcoin'
 
 import 'react-multi-carousel/lib/styles.css'
 
-const StyledAccentedText = styled.span`
+const StyledAccentedText = styled.div`
   font-size: 16px;
   font-weight: 700;
   color: white;
@@ -57,47 +58,34 @@ const ItemWrapper = styled.div<{ active: boolean }>`
 `
 
 type CarouselProps = {
-  paymentSystems: any[] // TODO !!!
+  paymentSystems: PaymentSystems
   selectedId: string
-  currency: string
   select: (id: string) => void
 }
 
-export const Carousel = ({ paymentSystems, currency, select, selectedId }: CarouselProps) => {
+export const Carousel = ({ paymentSystems, select, selectedId }: CarouselProps) => {
   const deviceType = useDeviceType()
 
   return (
     <StyledParent>
       <ReactCarousel deviceType={deviceType} responsive={RESPONSIVE}>
-        {paymentSystems.map((ps: any) => {
-          // TODO: !!!
-          const truncatedMin = ps.min.split('.')[0]
-          const truncatedMax = ps.max.split('.')[0]
-
-          return (
-            <ItemWrapper key={ps.id} active={ps.id === selectedId} onClick={() => select(ps.id)}>
-              <Bitcoin />
-              <ContentWrapper>
-                <StyledBlock>
-                  <StyledText>Usage fee</StyledText>
-                  <FeeRow>
-                    <StyledAccentedText>~ {ps.fee ?? 0}%</StyledAccentedText>
-                    {'  '}
-                  </FeeRow>
-                </StyledBlock>
-                <div>
-                  <StyledText>Processing currency</StyledText>
-                  <div>
-                    <StyledAccentedText>{ps.currency}</StyledAccentedText>
-                  </div>
-                  <StyledText>
-                    {currency} {truncatedMin} - {truncatedMax}
-                  </StyledText>
-                </div>
-              </ContentWrapper>
-            </ItemWrapper>
-          )
-        })}
+        {paymentSystems.map((ps: PaymentSystem) => (
+          <ItemWrapper key={ps.id} active={ps.id === selectedId} onClick={() => select(ps.id)}>
+            <Bitcoin />
+            <ContentWrapper>
+              <StyledBlock>
+                <StyledText>Usage fee</StyledText>
+                <FeeRow>
+                  <StyledAccentedText>~ {ps.fee ?? 0}%</StyledAccentedText>
+                </FeeRow>
+              </StyledBlock>
+              <StyledBlock>
+                <StyledText>Processing currency</StyledText>
+                <StyledAccentedText>{ps.currency}</StyledAccentedText>
+              </StyledBlock>
+            </ContentWrapper>
+          </ItemWrapper>
+        ))}
       </ReactCarousel>
     </StyledParent>
   )

@@ -64,13 +64,13 @@ export const Iframe: ComponentType<IIframe> = ({
 
   const props: Record<string, any> = {}
 
-  Object.keys(defaultProps).forEach((prop) => {
+  Object.keys(defaultProps).forEach(prop => {
     if (defaultProps[prop] != null) {
       props[prop] = defaultProps[prop]
     }
   })
 
-  Object.keys(props.style).forEach((i) => {
+  Object.keys(props.style).forEach(i => {
     if (props.style[i] == null) {
       delete props.style[i]
     }
@@ -90,5 +90,6 @@ export const Iframe: ComponentType<IIframe> = ({
       props.style.border = frameBorder
     }
   }
+  // eslint-disable-next-line  jsx-a11y/iframe-has-title
   return <iframe {...props} />
 }

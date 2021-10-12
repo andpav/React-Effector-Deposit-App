@@ -12,19 +12,15 @@ export const configureMirage = () =>
 
       this.post(
         '/api/create-payment',
-        () => {
-          // const payload = JSON.parse(requestBody);
-
-          return {
-            data: {
-              redirect: {
-                url: 'https://example.com/success',
-                method: 'GET',
-                params: [],
-              },
+        () => ({
+          data: {
+            redirect: {
+              url: 'https://example.com/pending',
+              method: 'GET',
+              params: [],
             },
-          }
-        },
+          },
+        }),
         { timing: 1000 },
       )
 
@@ -32,9 +28,19 @@ export const configureMirage = () =>
         errors: false,
       }))
 
-      this.post('/api/fee', () => ({ data: { fee: { approximateAmount: '5.79', approximatePercent: 4.9 } } }), {
-        timing: 200,
-      })
+      this.post(
+        '/api/fee',
+        (_, request) => {
+          const { id: requestId, amount } = JSON.parse(request.requestBody)
+
+          const feePercent = ps.find(({ id }) => id === requestId)?.fee || 0
+
+          return { data: { fee: Math.ceil((amount * feePercent) / 100) } }
+        },
+        {
+          timing: 200,
+        },
+      )
 
       this.passthrough()
     },

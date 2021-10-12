@@ -1,5 +1,7 @@
 import { createEffect, createEvent, forward } from '../../lib/effector'
 import { guard, restore } from 'effector'
+import { toast } from 'react-toastify'
+import { resetApp } from '../app'
 
 export type Processing = { redirect: { url: string } }
 
@@ -7,7 +9,9 @@ export const startProcessing = createEvent<string>()
 
 export const listener = createEvent<MessageEvent>()
 
-export const $iframeUrl = restore(startProcessing, '')
+export const resetIframeUrl = createEvent()
+
+export const $iframeUrl = restore(startProcessing, '').reset(resetIframeUrl)
 
 export const finishProcessing = createEvent()
 
@@ -30,7 +34,8 @@ export const startProcessingFx = createEffect({
 export const finishProcessingFx = createEffect({
   handler: () => {
     window.removeEventListener('message', listener)
-    window.location.replace(window.location.href)
+
+    toast('Success deposit!', { type: 'success' })
   },
 })
 
@@ -48,4 +53,9 @@ guard({
 forward({
   from: finishProcessing,
   to: finishProcessingFx,
+})
+
+forward({
+  from: finishProcessingFx,
+  to: resetApp,
 })

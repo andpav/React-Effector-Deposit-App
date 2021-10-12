@@ -1,24 +1,37 @@
-import { forward, guard } from '../../lib/effector'
+import { forward, sample, combine, guard } from '../../lib/effector'
 
-import { setAmount } from '../deposit'
-import { setSelectedId } from '../paymentSystems'
+import { $amount, setAmount } from '../deposit'
+import { $paymentSystemsSelectedId, setSelectedId } from '../paymentSystems'
 import { sendApplicationErrorFx } from '../app'
-import { $shouldShowFee, getFee, getFeeFx, debouncedGetFee, resetFee } from './index'
+import { calculateResultFx, debouncedGetFee, getFee, getFeeFx, resetFee, setResult } from './index'
 
-guard({
-  source: setAmount.map(amount => ({ amount })),
-  filter: $shouldShowFee,
-  target: getFee,
+forward({
+  from: [setAmount, setSelectedId],
+  to: getFee,
 })
 
-// forward({
-//   from: debouncedGetFee,
-//   to: getFeeFx,
-// })
+guard({
+  clock: debouncedGetFee,
+  source: combine($paymentSystemsSelectedId, $amount, (id, amount) => ({ id, amount })),
+  filter: ({ id, amount }) => Boolean(id) && Boolean(amount),
+  target: getFeeFx,
+})
 
 forward({
   from: setSelectedId,
   to: resetFee,
+})
+
+sample({
+  clock: getFeeFx.doneData.map(({ fee }) => fee),
+  source: $amount,
+  fn: (amount, fee) => ({ amount, fee }),
+  target: calculateResultFx,
+})
+
+forward({
+  from: calculateResultFx.doneData,
+  to: setResult,
 })
 
 forward({

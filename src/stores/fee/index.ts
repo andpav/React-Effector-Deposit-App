@@ -1,14 +1,11 @@
 import { debounce } from 'patronum/debounce'
-import { createEffect, attach, createEvent, restore, combine } from '../../lib/effector'
-
-import { $amount } from '../deposit'
-import { $paymentSystemSelected } from '../paymentSystems'
+import { createEffect, attach, createEvent, restore } from '../../lib/effector'
 
 import { api } from '../../transport/api'
 
-export type Fee = { fee: { approximateAmount: string; approximatePercent: number; feeSubunit: number } }
+export type Fee = { fee: string }
 
-export const getFee = createEvent<{ amount: string }>()
+export const getFee = createEvent()
 
 export const debouncedGetFee = debounce({ source: getFee, timeout: 500 })
 
@@ -23,29 +20,17 @@ export const $feePending = getFeeFx.pending
 export const resetFee = createEvent()
 
 export const $fee = restore(
-  getFeeFx.doneData.map(({ fee: { approximateAmount, approximatePercent } }) => ({
-    approximateAmount,
-    approximatePercent,
-    feeSubunit: approximateAmount.split('.')[1] ? approximateAmount.split('.')[1].length : 0,
-  })),
-  { approximateAmount: '', approximatePercent: 0, feeSubunit: 0 },
+  getFeeFx.doneData.map(({ fee }) => fee),
+  '',
 ).reset(resetFee)
 
-export const $result = combine($amount, $fee, (amount, { approximateAmount, feeSubunit }) => {
-  const difference = (Number(amount) - Number(approximateAmount)).toFixed(feeSubunit)
+export const setResult = createEvent<string>()
+export const resetResult = createEvent()
+
+export const $result = restore(setResult, '').reset(resetResult)
+
+export const calculateResultFx = createEffect(({ amount, fee }: { amount: string; fee: string }) => {
+  const difference = Number(amount) - Number(fee)
 
   return String(difference)
 })
-
-const checkIsAmountCorrect = ({ ps, amount }: { ps?: any; amount: string }) => {
-  // TODO: !!!
-  if (!ps) return false
-
-  const { min, max } = ps
-
-  return Number(min) <= Number(amount) && Number(amount) <= Number(max)
-}
-
-export const $shouldShowFee = combine($paymentSystemSelected, $amount, (ps, amount) =>
-  checkIsAmountCorrect({ ps, amount }),
-)

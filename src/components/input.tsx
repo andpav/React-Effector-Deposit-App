@@ -1,10 +1,11 @@
-import React, { forwardRef, Ref } from 'react'
+import React, { BaseSyntheticEvent } from 'react'
+import { FieldValues, UseFormRegister } from 'react-hook-form'
 import styled from 'styled-components'
 
 import { COLORS } from '../constants'
 
 const INPUT_PADDING_X = '1rem'
-const INPUT_PADDING_Y = 'calc(1rem)'
+const INPUT_PADDING_Y = '1rem'
 
 const StyledWrapper = styled.div<{ mb?: string; mt?: string }>`
   position: relative;
@@ -95,7 +96,7 @@ export type InputProps = {
   type?: string
   id?: string
   name?: string
-  formName?: string
+  formName: string
   error?: string | null
   value?: string | number
   defaultValue?: string | number
@@ -106,11 +107,11 @@ export type InputProps = {
   autoComplete?: string
   mb?: string
   mt?: string
-  onChange?: (e: any) => void
-  register: any // TODO: !!!
+  onChange?: (e: BaseSyntheticEvent) => void
+  register: UseFormRegister<FieldValues>
 }
 
-export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
+export const Input = (props: InputProps) => {
   const {
     type,
     name,
@@ -128,6 +129,9 @@ export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
     mt,
     register,
   } = props
+
+  const overrides = register(formName)
+
   return (
     <StyledWrapper mb={mb} mt={mt}>
       <StyledInputWrapper error={Boolean(error)}>
@@ -137,15 +141,19 @@ export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
           id={name}
           placeholder={startAdornment ? '' : name}
           startAdornment={Boolean(startAdornment)}
-          name={formName}
-          ref={ref}
           required={required}
           autoFocus={autoFocus}
           autoComplete={autoComplete}
-          onChange={onChange}
           value={value}
           defaultValue={defaultValue}
-          {...register(formName)}
+          {...overrides}
+          onChange={e => {
+            if (onChange) {
+              onChange(e)
+            }
+
+            overrides.onChange(e)
+          }}
         />
         {name && <StyledLabel htmlFor={name}>{name}</StyledLabel>}
       </StyledInputWrapper>
@@ -153,4 +161,4 @@ export const Input = forwardRef((props: InputProps, ref: Ref<any>) => {
       {error && <StyledError>{error}</StyledError>}
     </StyledWrapper>
   )
-})
+}
