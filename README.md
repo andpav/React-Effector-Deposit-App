@@ -1,3 +1,4 @@
+It requires node.js v16.13.0 to start
 
 ### TODO:
 
